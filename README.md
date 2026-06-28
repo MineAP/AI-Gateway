@@ -1,116 +1,203 @@
 # AI Gateway
 
-A lightweight AI Gateway for local LLM environments.
+> **A predictable OpenAI-compatible gateway for making the most of your local AI infrastructure.**
 
-AI Gateway provides a unified Function Calling interface for local language models while hiding implementation details such as MCP servers, REST APIs, RAG systems, and documentation search.
+AI Gateway is a lightweight OpenAI-compatible gateway designed to improve interoperability between modern AI clients and local AI environments.
 
-The goal is to make local LLMs behave more like cloud-hosted AI assistants without requiring native support for OpenAI's latest Responses API features.
+Its initial focus is enabling AI clients such as Codex to work seamlessly with local LLMs while hiding model-specific compatibility differences behind a stable and predictable interface.
+
+Rather than relying on autonomous infrastructure decisions, AI Gateway is built around explicit compatibility rules, deterministic routing, and transparent integrations, allowing users to remain in control of how their AI environment behaves.
 
 ---
 
 # Motivation
 
-Modern AI tools increasingly rely on advanced Function Calling features such as OpenAI Responses API namespaces.
+Modern AI software evolves rapidly, while local hardware typically evolves over much longer replacement cycles.
 
-Cloud models (GPT-5.x) support these features natively because the model, API, and client are designed together.
+Many developers already own capable but heterogeneous AI resources:
 
-Many local LLMs, however, currently have limited compatibility with namespace-based tool calling.
+- Desktop GPUs
+- Home servers
+- Laptops
+- Local LLMs
+- MCP servers
+- Search services
 
-Instead of exposing complex tool schemas directly to the model, AI Gateway presents a small set of stable Function Calling APIs.
+Connecting these resources into a consistent AI environment often requires model-specific workarounds, duplicated configurations, and manual integration.
 
-Example:
+AI Gateway aims to unify existing local AI infrastructure behind a predictable OpenAI-compatible interface, allowing modern AI clients to make better use of local resources.
 
-Instead of exposing
-
-```
-mcp__MCP_DOCKER.search_documentation(...)
-```
-
-the model only sees
-
-```
-search_documentation(...)
-```
-
-AI Gateway routes the request to the appropriate backend.
+Rather than assuming increasingly powerful hardware, the project focuses on making efficient use of limited local compute resources while getting the most value from the infrastructure you already have.
 
 ---
 
-# Features
+# Current Status
 
-* OpenAI-compatible Function Calling interface
-* MCP integration
-* Documentation search
-* Web search
-* Local RAG
-* Tool routing
-* Authentication
-* Result caching
-* Multiple backend support
+Current focus:
+
+- 🚧 Compatibility Pipeline
+- ⏳ Multi-Provider Routing
+- ⏳ Remote MCP
+- ⏳ AI Services
+
+See **docs/roadmap.md** for implementation phases.
 
 ---
 
-# High Level Architecture
+# Design Principles
 
+## Keep Models Simple
+
+LLMs should interact only with stable Function Calling APIs.
+
+Backend implementations should be free to evolve without requiring prompt changes or model-specific instructions.
+
+---
+
+## Backend Independence
+
+Gateway APIs remain stable regardless of backend implementation.
+
+For example, a function such as
+
+```text
+search_documentation()
 ```
-                Local LLM
-                     │
-             Function Calling
-                     │
-          +----------------------+
-          |      AI Gateway      |
-          +----------------------+
-          │ Tool Registry
-          │ Router
-          │ Cache
-          │ Authentication
-          │ Logging
-          └───────┬──────────────
+
+may internally use:
+
+- Docker MCP Toolkit
+- Local Search
+- Future RAG implementation
+
+without requiring changes to prompts or client behavior.
+
+---
+
+## Predictable by Design
+
+AI Gateway favors explicit configuration over autonomous infrastructure decisions.
+
+Compatibility transformations, routing policies, and backend integrations are defined by deterministic rules rather than AI-generated decisions.
+
+The goal of AI Gateway is not to replace AI reasoning, but to provide infrastructure that allows AI systems to use local resources more effectively.
+
+Predictability is not only a usability goal—it is also an efficiency strategy for resource-constrained local AI environments.
+
+---
+
+## Small Start
+
+AI Gateway evolves incrementally.
+
+Each implementation phase focuses on solving a concrete problem using the smallest useful architecture before introducing additional capabilities.
+
+Features such as Remote MCP, RAG, workflow automation, and intelligent routing will be introduced only when they provide clear practical value.
+
+---
+
+## Docker-first
+
+Each component should be independently deployable as a Docker container.
+
+This enables consistent deployment across desktops, home servers, and future environments while keeping the overall architecture modular.
+
+---
+
+# High-Level Architecture
+
+AI Gateway currently focuses on providing a lightweight compatibility layer between modern AI clients and local AI environments.
+
+```text
+                    AI Client
+              (Codex, ChatGPT, etc.)
+                        │
+              OpenAI-compatible API
+                        │
+            +-------------------------+
+            |       AI Gateway        |
+            |-------------------------|
+            | HTTP API Endpoint       |
+            | Compatibility Pipeline  |
+            | AI Provider Adapter     |
+            +-------------------------+
+                        │
+                        ▼
+                Local AI Environment
+                  ├── AI Provider
+                  │      ├── LM Studio
+                  │      │      └── Local LLM
+                  │      │
+                  │      └── Future Providers
                   │
-      ┌───────────┼──────────────┐
-      │           │              │
-      ▼           ▼              ▼
-  MCP Servers   REST APIs     Local Services
+                  ├── MCP Server (Future)
+                  ├── Search Service (Future)
+                  └── RAG (Future)
 ```
 
----
+The first implementation focuses on compatibility between AI clients and local LLMs.
 
-# Design Goals
+Additional backend services will be introduced incrementally while preserving a stable OpenAI-compatible interface.
 
-* Simple tool schemas
-* Local LLM compatibility
-* Backend independence
-* Extensible adapter architecture
-* Docker-first deployment
-* Stateless gateway where possible
+Architecture details are documented in **docs/architecture.md**.
 
 ---
 
-# Planned Integrations
+# Future Evolution
 
-## MCP
+AI Gateway is intentionally designed to evolve incrementally.
 
-* Docker MCP
-* GitHub MCP
-* Filesystem MCP
-* Playwright MCP
+Future capabilities will be introduced only after they solve concrete problems while preserving the project's core principles:
 
-## Search
+- Predictable behavior
+- Explicit configuration
+- Backend independence
+- Efficient use of local AI resources
 
-* Documentation search
-* Web search
-* Repository search
+Potential future directions include:
 
-## AI
-
-* Embedding models
-* Reranker
-* Local RAG
+- Additional LLM compatibility layers
+- Multiple AI providers
+- Remote MCP integration
+- Local Search
+- RAG
+- AI-assisted infrastructure services
 
 ---
 
-# Future
+# Why Deterministic Routing?
 
-AI Gateway is intended to become the central AI platform for a personal homelab.
+AI-driven infrastructure decisions are not free.
 
-It should support multiple LLMs, multiple search providers, multiple MCP servers, and future AI workflows through a single stable Function Calling interface.
+When AI selects an inappropriate backend or workflow, the result is often a failed request followed by one or more retries.
+
+In cloud environments this may simply increase operating costs.
+
+In local AI environments, however, retries consume valuable GPU time, memory bandwidth, and power while reducing the responsiveness of interactive workloads.
+
+AI Gateway therefore favors deterministic, rule-based routing whenever possible, reserving AI reasoning for problems that genuinely require it.
+
+Autonomous routing may be introduced in the future when its practical benefits clearly outweigh its computational cost.
+
+---
+
+# Documentation
+
+Project documentation is organized by responsibility.
+
+| Document | Purpose |
+|----------|---------|
+| **README.md** | Project overview and design philosophy |
+| **docs/requirements.md** | Functional requirements |
+| **docs/roadmap.md** | Implementation roadmap |
+| **docs/architecture.md** | Current system architecture |
+
+The architecture document always describes the current implementation.
+
+Future ideas and planned capabilities are intentionally documented separately.
+
+---
+
+# License
+
+MIT License
