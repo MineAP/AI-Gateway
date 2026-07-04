@@ -10,6 +10,9 @@ Read the following documents before making architectural or implementation chang
 2. `docs/architecture.md`
 3. `docs/requirements.md`
 4. `docs/roadmap.md`
+5. `docs/development.md`
+
+The Development Guide defines how code should be organized and implemented within this repository. Read it before implementing code.
 
 ## Documentation
 

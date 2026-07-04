@@ -191,6 +191,7 @@ Project documentation is organized by responsibility.
 | **docs/requirements.md** | Functional requirements |
 | **docs/roadmap.md** | Implementation roadmap |
 | **docs/architecture.md** | Current system architecture |
+| **docs/development.md** | Development Guide |
 
 The architecture document always describes the current implementation.
 

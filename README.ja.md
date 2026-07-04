@@ -191,6 +191,7 @@ AIによる自動判断にもコストがあります。
 | **docs/requirements.md** | 要件定義 |
 | **docs/roadmap.md** | 開発ロードマップ |
 | **docs/architecture.md** | 現在のアーキテクチャ |
+| **docs/development.md** | 開発ガイド |
 
 `architecture.md` は、現在の実装を表すドキュメントです。
 
