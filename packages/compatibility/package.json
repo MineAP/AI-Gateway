@@ -1,0 +1,15 @@
+{
+  "name": "@ai-gateway/compatibility",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsc --build",
+    "check": "biome check --write src/",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ai-gateway/protocol": "workspace:*",
+    "@ai-gateway/shared": "workspace:*"
+  }
+}
