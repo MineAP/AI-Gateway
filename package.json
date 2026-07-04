@@ -1,0 +1,15 @@
+{
+  "name": "ai-gateway",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "biome check --write .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  },
+  "packageManager": "pnpm@10.34.4"
+}
