@@ -6,17 +6,24 @@ Keep this file short. It is the repository entry point for AI agents. Detailed d
 
 Read the following documents before making architectural or implementation changes.
 
-1. `README.md`
-2. `docs/architecture.md`
-3. `docs/requirements.md`
-4. `docs/roadmap.md`
-5. `docs/development.md`
+1. README.md
+2. docs/architecture.md
+3. docs/requirements.md
+4. docs/roadmap.md
+5. docs/development.md
+6. docs/design/README.md
 
 The Development Guide defines how code should be organized and implemented within this repository. Read it before implementing code.
 
 ## Documentation
 
 Keep long-term project documentation under `docs/`.
+
+Architecture and implementation design documents are organized under
+`docs/design/`.
+
+Read the relevant design documents before modifying architecture or
+implementing major features.
 
 Use `docs/design-notes/` for implementation studies, technology evaluations, and temporary design discussions.
 

@@ -185,6 +185,10 @@ Autonomous routing may be introduced in the future when its practical benefits c
 
 Project documentation is organized by responsibility.
 
+Design documents under `docs/design/` define the internal architecture,
+
+design principles, and internal contracts used by AI Gateway.
+
 | Document | Purpose |
 |----------|---------|
 | **README.md** | Project overview and design philosophy |
@@ -192,6 +196,7 @@ Project documentation is organized by responsibility.
 | **docs/roadmap.md** | Implementation roadmap |
 | **docs/architecture.md** | Current system architecture |
 | **docs/development.md** | Development Guide |
+| **docs/design/** | Internal design documents, design principles, and internal contracts |
 
 The architecture document always describes the current implementation.
 

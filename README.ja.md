@@ -185,6 +185,9 @@ AIによる自動判断にもコストがあります。
 
 プロジェクトのドキュメントは、それぞれ役割を分けて管理します。
 
+`docs/design/` には、AI Gateway の内部設計、設計原則、
+および内部契約（Internal Contract）を定義した設計書を配置します。
+
 | ドキュメント | 内容 |
 |--------------|------|
 | **README.md** | プロジェクト概要・設計思想 |
@@ -192,10 +195,15 @@ AIによる自動判断にもコストがあります。
 | **docs/roadmap.md** | 開発ロードマップ |
 | **docs/architecture.md** | 現在のアーキテクチャ |
 | **docs/development.md** | 開発ガイド |
+| **docs/design/** | 内部設計・設計原則・内部契約 |
 
-`architecture.md` は、現在の実装を表すドキュメントです。
+`architecture.md` は現在のシステム構成を表します。
 
-将来の構想や追加予定の機能は、`roadmap.md` や `requirements.md` で管理します。
+`docs/design/` では、Gateway 内部で利用する内部設計・設計原則・内部契約
+（Internal Contract）を定義します。
+
+将来の構想や追加予定の機能は、`roadmap.md` や `requirements.md`
+で管理します。
 
 ---
 
