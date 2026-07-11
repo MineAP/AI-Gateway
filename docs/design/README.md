@@ -9,8 +9,8 @@ principles used by AI Gateway.
 
 | Document | Purpose |
 |----------|---------|
-| internal-model.md | Defines the Gateway Internal Model shared by all Gateway components. |
-| compatibility-pipeline.md | Defines compatibility processing (planned). |
+| internal-model.md | Defines the Gateway Internal Model that enables compatibility processing across all components. |
+| compatibility-pipeline.md | Defines how compatibility modules transform requests and responses using the Internal Model. |
 | provider/ | Provider-specific mapping designs (planned). |
 
 Read the relevant design documents before implementing or modifying
