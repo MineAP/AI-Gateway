@@ -357,17 +357,27 @@ test/
 
 ### Test Fixtures
 
-- Prefer reusable fixtures for compatibility transformations.
-- Keep fixtures focused on a single scenario.
-- Avoid unnecessary fixture complexity.
+- Prefer reusable protocol fixtures for compatibility transformations.
+- Prefer real protocol captures over handcrafted JSON whenever practical.
+- Keep fixtures focused on a single compatibility scenario.
+- Preserve provider-specific fields unless anonymization is required.
+- Expected Gateway Internal Model representations should be stored under `test/fixtures/internal/`.
 
 example:
 ```
 fixtures/
 ├── openai/
+│   ├── requests/
+│   └── responses/
 ├── lmstudio/
-└── qwen/
+│   ├── requests/
+│   └── responses/
+└── internal/
+    ├── requests/
+    └── responses/
 ```
+
+See `test/fixtures/README.md` for the fixture layout, naming conventions, and maintenance guidelines.
 
 ### Mocking
 

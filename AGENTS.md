@@ -17,19 +17,27 @@ The Development Guide defines how code should be organized and implemented withi
 
 ## Documentation
 
+### General
+
 Keep long-term project documentation under `docs/`.
-
-Architecture and implementation design documents are organized under
-`docs/design/`.
-
-Read the relevant design documents before modifying architecture or
-implementing major features.
-
-Use `docs/design-notes/` for implementation studies, technology evaluations, and temporary design discussions.
 
 Only promote content to `architecture.md` after the design has been finalized.
 
 When responsibilities, architecture, or requirements change, update the corresponding documentation.
+
+### Design Documents
+
+Architecture and implementation design documents are organized under `docs/design/`.
+
+Read the relevant design documents before modifying architecture or implementing major features.
+
+Use `docs/design-notes/` for implementation studies, technology evaluations, and temporary design discussions.
+
+### Testing
+
+Testing resources are organized under `test/`.
+
+Read `test/fixtures/README.md` before adding or modifying protocol fixtures.
 
 ## Architecture
 
