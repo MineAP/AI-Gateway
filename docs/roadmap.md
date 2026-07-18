@@ -8,6 +8,28 @@ Unlike `requirements.md`, this document focuses on **when** capabilities are exp
 
 # Phase 1
 
+## Gateway Framework
+
+### Goal
+
+Establish the gateway framework that all functional capabilities depend on.
+
+### Deliverables
+
+- HTTP API Endpoint
+- Gateway Request Dispatcher
+- Provider Registry
+- Provider Adapter Interface
+- Application Bootstrap
+
+### Related Requirements
+
+- REQ-000
+
+---
+
+# Phase 2
+
 ## Compatibility Pipeline
 
 ### Goal
@@ -16,12 +38,10 @@ Enable modern AI clients to communicate with local LLMs through a stable OpenAI-
 
 ### Deliverables
 
-- HTTP API Endpoint
-- Gateway Request Dispatcher
-- Provider Registry
 - Compatibility Pipeline
 - OpenAI Adapter
 - LM Studio Adapter
+- Function Calling compatibility
 
 ### Related Requirements
 
@@ -29,7 +49,7 @@ Enable modern AI clients to communicate with local LLMs through a stable OpenAI-
 
 ---
 
-# Phase 2
+# Phase 3
 
 ## Multi-Provider Routing
 
@@ -49,7 +69,7 @@ Support multiple AI providers through explicit routing policies.
 
 ---
 
-# Phase 3
+# Phase 4
 
 ## Remote AI Services
 

@@ -10,7 +10,49 @@ Implementation details and architectural decisions are documented in `architectu
 
 ---
 
-# Priority
+# Foundation Requirements
+
+Foundation requirements establish the gateway framework that all functional capabilities depend on.
+
+---
+
+## High
+
+### REQ-000 Gateway Framework
+
+**Status**
+
+🚧 Planned
+
+**Why**
+
+All functional capabilities of AI Gateway — compatibility transformations, multi-provider routing, and remote services — require a stable execution framework.
+
+The gateway framework provides the core infrastructure: HTTP API handling, request orchestration, provider resolution, and adapter interfaces. Without this foundation, no functional requirement can be satisfied.
+
+Previously, these framework components were implicitly included within REQ-001. Separating them into an independent requirement clarifies that the framework is a prerequisite for all subsequent capabilities.
+
+**Success Criteria**
+
+- HTTP API Endpoint accepts OpenAI-compatible requests and returns responses.
+- Gateway Request Dispatcher orchestrates request execution lifecycle.
+- Provider Registry registers and resolves available Provider Adapters by provider name.
+- Provider Adapter interface defines standardized methods (`parseRequest`, `buildRequest`, `parseResponse`, `buildResponse`).
+- Application bootstrap initializes all framework components and starts the HTTP server.
+
+**Notes**
+
+This requirement covers only the gateway framework itself. Compatibility transformations, provider-specific adapter implementations, and routing policies are addressed by functional requirements.
+
+REQ-000 establishes the execution framework and integration points.
+
+Compatibility transformations are implemented in REQ-001.
+
+---
+
+# Functional Requirements
+
+Functional requirements describe capabilities built on top of the gateway framework established by REQ-000.
 
 ## High
 

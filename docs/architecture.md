@@ -74,6 +74,7 @@ Future capabilities are intentionally excluded to keep the design focused on the
 
 | Requirement | Status | Notes |
 |-------------|:------:|------|
+| REQ-000 Gateway Framework        | ✅ In Scope | Current implementation target |
 | REQ-001 Compatibility Pipeline | ✅ In Scope | Current implementation target |
 | REQ-002 Multi-Provider Routing | 🟡 Planned | Architecture considered |
 | REQ-003 Remote MCP | ❌ Out of Scope | Future extension |
