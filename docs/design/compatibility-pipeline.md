@@ -10,6 +10,8 @@ Compatibility Modules operate exclusively on the Gateway Internal Model.
 
 Provider-specific protocols remain the responsibility of Provider Adapters.
 
+See also: [request-flow.md](request-flow.md) for the end-to-end request lifecycle and component responsibilities.
+
 ---
 
 # Purpose
@@ -107,6 +109,10 @@ overall architecture.
 ```
 
 The Compatibility Pipeline never accesses provider-specific protocols directly.
+
+The Compatibility Pipeline is invoked by the Gateway Request Dispatcher.
+Adapter protocol conversion and pipeline execution are orchestrated by the
+Dispatcher — neither the HTTP Layer nor Provider Adapters invoke the Pipeline directly.
 
 ---
 
@@ -238,7 +244,7 @@ Request/Response lifecycle.
 It carries request-specific information that may be required during the
 corresponding Response processing.
 
-The Compatibility Pipeline manages the Processing Context for each
+The Gateway Request Dispatcher creates and manages the Processing Context for each
 Request/Response lifecycle.
 
 Some compatibility features require information generated during Request
@@ -250,7 +256,7 @@ Examples include:
 - namespace mappings
 - provider capabilities
 
-The Compatibility Pipeline provides the Processing Context to Compatibility
+The Compatibility Pipeline receives the Processing Context from the Dispatcher and provides it to Compatibility
 Modules as needed.
 
 The mechanism used to preserve and propagate the Processing Context is

@@ -19,6 +19,8 @@ The initial implementation (REQ-001) focuses on Function Calling
 compatibility, but the Internal Model is designed to support additional
 compatibility features without changing the adapter interfaces.
 
+See also: [request-flow.md](request-flow.md) for how the Internal Model flows through the request and response lifecycle.
+
 ---
 
 # Glossary

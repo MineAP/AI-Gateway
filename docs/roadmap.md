@@ -17,8 +17,11 @@ Enable modern AI clients to communicate with local LLMs through a stable OpenAI-
 ### Deliverables
 
 - HTTP API Endpoint
+- Gateway Request Dispatcher
+- Provider Registry
 - Compatibility Pipeline
-- LM Studio Provider Adapter
+- OpenAI Adapter
+- LM Studio Adapter
 
 ### Related Requirements
 

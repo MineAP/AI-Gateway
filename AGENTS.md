@@ -46,10 +46,17 @@ Follow the responsibilities defined in `docs/architecture.md`.
 Maintain clear separation between the following functional components:
 
 - HTTP API Endpoint
+- Gateway Request Dispatcher
+- Provider Registry
 - Compatibility Pipeline
-- AI Provider Adapter
+- Provider Adapter
 
 Avoid mixing responsibilities across components.
+
+## Sequence Diagrams
+
+Use Mermaid sequence diagrams for request flow and component interaction documentation.
+Avoid ASCII diagrams for execution flows — prefer Mermaid `sequenceDiagram` syntax.
 
 ## Design Principles
 

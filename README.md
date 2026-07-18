@@ -118,8 +118,10 @@ AI Gateway currently focuses on providing a lightweight compatibility layer betw
             |       AI Gateway        |
             |-------------------------|
             | HTTP API Endpoint       |
-            | Compatibility Pipeline  |
-            | AI Provider Adapter     |
+            | Gateway Request Dispatcher |
+            | Provider Registry         |
+            | Compatibility Pipeline    |
+            | Provider Adapter          |
             +-------------------------+
                         │
                         ▼

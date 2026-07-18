@@ -10,6 +10,7 @@ principles used by AI Gateway.
 | Document | Purpose |
 |----------|---------|
 | internal-model.md | Defines the Gateway Internal Model that enables compatibility processing across all components. |
+| request-flow.md | Describes how requests flow through the Gateway lifecycle, including component responsibilities and execution variants. |
 | compatibility-pipeline.md | Defines how compatibility modules transform requests and responses using the Internal Model. |
 | provider/ | Provider-specific mapping designs (planned). |
 
