@@ -22,7 +22,7 @@ Foundation requirements establish the gateway framework that all functional capa
 
 **Status**
 
-🚧 Planned
+🚧 In Progress
 
 **Why**
 

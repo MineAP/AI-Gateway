@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev": "tsx watch src/dev.ts",
     "build": "tsc --build",
     "check": "biome check --write src/",
     "test": "vitest run"
@@ -11,8 +12,11 @@
   "dependencies": {
     "@ai-gateway/compatibility": "workspace:*",
     "@ai-gateway/config": "workspace:*",
-    "@ai-gateway/provider": "workspace:*",
     "@ai-gateway/protocol": "workspace:*",
+    "@ai-gateway/provider": "workspace:*",
     "@ai-gateway/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1"
   }
 }

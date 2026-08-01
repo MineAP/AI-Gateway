@@ -52,13 +52,12 @@ Current implementation includes:
 - OpenAI-compatible HTTP API
 - Gateway Request Dispatcher
 - Provider Registry
-- Compatibility Pipeline
-- Provider Adapters
-  - OpenAI Adapter
-  - LM Studio Adapter
+- Provider Adapter interface
 
 The following capabilities are intentionally deferred to future development phases:
 
+- Compatibility Pipeline transformations
+- Provider-specific adapters
 - Remote MCP
 - Search services
 - RAG
@@ -75,7 +74,7 @@ Future capabilities are intentionally excluded to keep the design focused on the
 | Requirement | Status | Notes |
 |-------------|:------:|------|
 | REQ-000 Gateway Framework        | ✅ In Scope | Current implementation target |
-| REQ-001 Compatibility Pipeline | ✅ In Scope | Current implementation target |
+| REQ-001 Compatibility Pipeline | 🟡 Planned | Integration point only in REQ-000 |
 | REQ-002 Multi-Provider Routing | 🟡 Planned | Architecture considered |
 | REQ-003 Remote MCP | ❌ Out of Scope | Future extension |
 | REQ-004 AI Services | ❌ Out of Scope | Future extension |
@@ -85,13 +84,13 @@ Future capabilities are intentionally excluded to keep the design focused on the
 - OpenAI-compatible HTTP API
 - Request orchestration via Gateway Request Dispatcher
 - Provider adapter resolution via Provider Registry
-- Compatibility transformations
-- AI provider abstraction
-- Local LLM integration
+- Provider Adapter interface
 
 ### Out of Scope
 
 - Remote MCP execution
+- Compatibility transformations
+- Provider-specific adapters
 - Search services
 - RAG
 - AI-assisted routing
