@@ -99,8 +99,33 @@ Repository-level integration tests and shared test assets.
 | tsconfig.base.json | Shared TypeScript configuration |
 | biome.json | Shared formatter/linter configuration |
 
+## 3. Current Development Server Startup
 
-## 3. Package Responsibilities
+Start the development server from the repository root:
+
+```sh
+pnpm run dev
+```
+
+The server listens on `http://127.0.0.1:8080` and accepts `POST` requests at
+`/v1/chat/completions`.
+
+```sh
+curl http://127.0.0.1:8080/v1/chat/completions \\
+  --header "content-type: application/json" \\
+  --data '{"model":"development"}'
+```
+
+The development server uses a local passthrough adapter and returns the request
+body in an `echoed` response. It is intended only to verify the gateway HTTP
+flow; it does not connect to an AI provider. Stop it with `Ctrl+C`.
+
+When provider-specific adapters and configuration are implemented, the
+development composition can be replaced while preserving the `pnpm run dev`
+command.
+
+
+## 4. Package Responsibilities
 
 Each package owns a single responsibility.
 
@@ -198,7 +223,7 @@ Create a new package only when:
 
 Do not create packages solely for organizational purposes.
 
-## 4. Dependency Rules
+## 5. Dependency Rules
 
 ### Dependency Graph
 
@@ -266,7 +291,7 @@ protocol → shared
 - protocol → provider
 - shared → any package
 
-## 5. TypeScript Guidelines
+## 6. TypeScript Guidelines
 
 The following guidelines define how TypeScript should be used throughout the AI Gateway project.
 
@@ -314,7 +339,7 @@ Formatting and style are enforced by tooling (Biome) and are intentionally exclu
 - Convert external models into internal protocol models at package boundaries.
 
 
-## 6. Testing
+## 7. Testing
 
 ### Testing Principles
 
@@ -385,7 +410,7 @@ See `test/fixtures/README.md` for the fixture layout, naming conventions, and ma
 - Do not mock internal package boundaries unless necessary.
 
 
-## 7. Architectural Naming
+## 8. Architectural Naming
 
 Names should represent architectural concepts rather than implementation details.
 
@@ -445,7 +470,7 @@ packages/provider/openai/
 
 Outside the `provider` package, use types defined in `@ai-gateway/protocol` whenever possible.
 
-## 8. Configuration
+## 9. Configuration
 
 Configuration should remain explicit, predictable, and aligned with architectural responsibilities.
 
