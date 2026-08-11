@@ -171,9 +171,10 @@ The same Processing Context is shared across:
 - Inbound adapter `buildResponse()`
 
 For streaming responses, the same Processing Context is reused for every
-response chunk throughout the entire stream lifecycle. This allows compatibility
-modules to maintain state — such as namespace mappings or rewritten tool names —
-across request and all subsequent response chunks.
+response chunk throughout the entire stream lifecycle. REQ-001 does not use
+cross-phase state: request-side tool names are self-contained and response
+processing is pass-through. Stateful response processing is reserved for future
+compatibility modules.
 
 The Processing Context is discarded when:
 
@@ -204,6 +205,7 @@ Responsible for:
 - Resolving adapters through the Provider Registry (`resolveInboundAdapter`, `resolveOutboundAdapter`)
 - Invoking adapter methods (`parseRequest`, `buildRequest`, `parseResponse`, `buildResponse`)
 - Invoking the Compatibility Pipeline (`processRequest`, `processResponse`)
+  (`processResponse` is a no-op for REQ-001)
 - Managing the Processing Context lifecycle
 - Coordinating provider communication
 
@@ -236,7 +238,7 @@ Responsible for:
 
 - Executing Compatibility Modules
 - Applying compatibility transformations
-- Evaluating Provider Capability
+- Evaluating Provider Capability (future requirements)
 
 ---
 
@@ -245,7 +247,7 @@ Responsible for:
 Responsible for:
 
 - A single compatibility transformation
-- Reading Provider Capability
+- Reading Provider Capability (future requirements)
 - Reading and updating Processing Context
 
 Modules are independent and are executed only by the Compatibility Pipeline.
