@@ -44,13 +44,13 @@ export class CompatibilityPipeline {
     return current;
   }
 
-  /** Execute all response modules in order. Returns the original response when no modules are registered. */
+  /** Execute all response modules in reverse registration order. Returns the original response when no modules are registered. */
   async processResponse(
     response: GatewayResponse,
     context: ProcessingContext,
   ): Promise<GatewayResponse> {
     let current = response;
-    for (const module of this.modules) {
+    for (const module of [...this.modules].reverse()) {
       if (!module.processResponse) continue;
       try {
         current = await module.processResponse(current, context);

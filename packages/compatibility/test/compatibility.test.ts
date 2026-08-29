@@ -60,7 +60,7 @@ describe("CompatibilityPipeline", () => {
       expect(order).toEqual(["a-request", "b-request"]);
     });
 
-    it("executes response modules in registration order", async () => {
+    it("executes response modules in reverse registration order (B -> A)", async () => {
       const order: string[] = [];
       const pipeline = new CompatibilityPipeline();
 
@@ -81,7 +81,7 @@ describe("CompatibilityPipeline", () => {
 
       await pipeline.processResponse(makeResponse({}), { metadata: new Map() });
 
-      expect(order).toEqual(["a-response", "b-response"]);
+      expect(order).toEqual(["b-response", "a-response"]);
     });
   });
 
@@ -158,22 +158,24 @@ describe("CompatibilityPipeline", () => {
     it("passes module output to the next module in response processing", async () => {
       const pipeline = new CompatibilityPipeline();
 
+      // Response modules execute in reverse registration order (b -> a),
+      // so "a" runs after "b" and can observe its output.
       pipeline.register({
-        name: "step1",
+        name: "a",
         async processResponse(res) {
-          return { ...res, metadata: { step: 1 } };
+          return { ...res, metadata: { ...res.metadata, stepA: res.metadata.stepB === 1 ? 2 : -1 } };
         },
       });
       pipeline.register({
-        name: "step2",
+        name: "b",
         async processResponse(res) {
-          return { ...res, metadata: { ...res.metadata, step: 2 } };
+          return { ...res, metadata: { ...res.metadata, stepB: 1 } };
         },
       });
 
       const result = await pipeline.processResponse(makeResponse({}), { metadata: new Map() });
 
-      expect(result.metadata).toEqual({ step: 2 });
+      expect(result.metadata).toEqual({ stepB: 1, stepA: 2 });
     });
   });
 
