@@ -1,2 +1,3 @@
-/** Compatibility Pipeline - request/response transformation */
-export const compatibilityVersion = "0.0.1";
+export { CompatibilityPipeline } from "./pipeline.js";
+export type { CompatibilityModule } from "./module.js";
+export { PipelineError } from "./pipeline.js";

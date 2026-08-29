@@ -158,15 +158,16 @@ Request-specific Processing Context is managed by the Compatibility Pipeline.
 Compatibility Modules SHOULD preserve provider-specific information whenever
 possible.
 
-Unsupported protocol elements SHOULD pass through unchanged.
+Unsupported protocol elements are preserved in the `rawData` field of each
+Internal Model type and SHOULD pass through unchanged.
 
 ---
 
 # Processing Model
 
-The Compatibility Pipeline processes both Requests and Responses.
-
-Each Compatibility Module participates in both phases.
+The Compatibility Pipeline supports both Request and Response phases. A module
+may implement one or both phases. The REQ-001 Function Calling Module
+transforms only the Request; its Response phase is pass-through.
 
 ```text
 Request
@@ -229,12 +230,71 @@ Internal Response
 Response
 ```
 
-The execution order is deterministic.
+The execution order is deterministic. REQ-001 contains only one module, so no
+module ordering policy is required at this stage.
 
 Response processing corresponds to the Request that initiated the provider
 interaction.
 
+For streaming responses, future stateful Compatibility Modules may process each
+chunk independently as an `InternalChunk` while sharing a single Processing
+Context for the duration of the stream. REQ-001 does not maintain response
+processing state because its response phase is pass-through.
+
 ---
+
+
+# Function Calling Module
+
+The Function Calling Module is the first Compatibility Module implemented for REQ-001.
+
+## Responsibility
+
+Transforms namespaced tool definitions into flat representations so that
+providers which do not support namespace structures can correctly process
+function calling requests.
+
+## Request Processing: Namespace → Flat
+
+When the AI Client sends a request containing `type: "namespace"` tool definitions,
+the Function Calling Module flattens them into individual function tools before
+forwarding to the Provider Adapter.
+
+### Transformation Logic
+
+For each namespace entry in `InternalRequest.tools[]`:
+
+1. Extract the inner `tools[]` array from the namespace object.
+2. For each inner tool, create a standalone `InternalToolDefinition` with `type: "function"`.
+3. Set the flattened tool name to `<namespace_name>__<tool_name>` (e.g., `mcp__MCP_DOCKER__browser_click`). This naming convention matches Codex CLI internal identifiers.
+4. Replace the original namespace entry with the flattened function definitions.
+
+### Example
+
+```text
+Input (from AI Client):
+  { type: "namespace", name: "mcp__MCP_DOCKER", tools: [
+    { type: "function", name: "browser_click" },
+    { type: "function", name: "browser_close" }
+  ]}
+
+Output (to Provider Adapter):
+  { type: "function", name: "mcp__MCP_DOCKER__browser_click", ... }
+  { type: "function", name: "mcp__MCP_DOCKER__browser_close", ... }
+```
+
+## Response Processing: Pass-through
+
+The REQ-001 Function Calling Module does not transform responses. Provider
+responses, including tool calls and tool results, are passed through unchanged
+after provider protocol parsing and before client protocol serialization.
+
+## Processing Context Usage
+
+The Function Calling Module does not store state in the Processing Context.
+Request-side flattening produces flat names that are self-contained; no reverse
+mapping is required for response processing.
+
 
 # Processing Context
 
@@ -250,24 +310,29 @@ Request/Response lifecycle.
 Some compatibility features require information generated during Request
 processing to be available during the corresponding Response processing.
 
-Examples include:
+Future examples include:
 
-- rewritten tool names
-- namespace mappings
-- provider capabilities
+- `rewritten tool names`
+- `namespace mappings`
 
 The Compatibility Pipeline receives the Processing Context from the Dispatcher and provides it to Compatibility
 Modules as needed.
 
-The mechanism used to preserve and propagate the Processing Context is
-implementation-defined.
+The specific type definition, ownership rules, and lifecycle management are
+documented in [internal-model.md](internal-model.md). See that document for:
+
+- `ProcessingContext` interface and field definitions
+- Ownership rules (Adapter vs Module vs Dispatcher)
 
 ---
 
-# Provider Capabilities
+# Provider Capabilities (Future)
 
-Compatibility Modules may use Provider Capabilities exposed through the
+Future Compatibility Modules may use Provider Capabilities exposed through the
 Processing Context.
+
+REQ-001 does not configure, expose, or use Provider Capabilities. Its namespace
+flattening is applied uniformly.
 
 Modules SHOULD rely on capabilities rather than provider-specific
 implementations whenever practical.
@@ -322,9 +387,8 @@ REQ-001 implements the first Compatibility Module.
 ### Included
 
 - Function Calling compatibility
-- Namespace transformation
-- Tool Call transformation
-- Tool Result transformation
+- Structural transformation: namespace → flat in `processRequest()` using `<namespace>__<tool>` naming convention
+- Response pass-through; no response compatibility transformation is performed
 
 ### Pass-through
 
