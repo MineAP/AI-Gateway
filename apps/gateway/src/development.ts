@@ -1,8 +1,8 @@
 import type { ProviderAdapter } from "@ai-gateway/provider";
 
 import {
-  createGatewayApplication,
   type CompatibilityPipeline,
+  createGatewayApplication,
   type ProviderExecutor,
 } from "./index.js";
 
@@ -16,16 +16,16 @@ const developmentProviderId = "development";
 const developmentAdapter: ProviderAdapter = {
   providerId: developmentProviderId,
   async parseRequest(request) {
-    return { raw: request, metadata: {} };
+    return { messages: [], rawData: request as Record<string, unknown> };
   },
   async buildRequest(request) {
-    return request.raw;
+    return request.rawData;
   },
   async parseResponse(response) {
-    return { raw: response, metadata: {} };
+    return { rawData: response as Record<string, unknown> };
   },
   async buildResponse(response) {
-    return response.raw;
+    return response.rawData;
   },
 };
 
@@ -44,13 +44,19 @@ const developmentExecutor: ProviderExecutor = {
   },
 };
 
-export function createDevelopmentGatewayApplication(options: DevelopmentGatewayOptions = {}) {
-  const application = createGatewayApplication(developmentPipeline, developmentExecutor, {
-    inboundProviderId: developmentProviderId,
-    outboundProviderId: developmentProviderId,
-    host: options.host ?? "127.0.0.1",
-    port: options.port ?? 8080,
-  });
+export function createDevelopmentGatewayApplication(
+  options: DevelopmentGatewayOptions = {},
+) {
+  const application = createGatewayApplication(
+    developmentPipeline,
+    developmentExecutor,
+    {
+      inboundProviderId: developmentProviderId,
+      outboundProviderId: developmentProviderId,
+      host: options.host ?? "127.0.0.1",
+      port: options.port ?? 8080,
+    },
+  );
   application.registry.register(developmentAdapter);
   return application;
 }

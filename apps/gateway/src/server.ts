@@ -1,6 +1,9 @@
 import { createServer, type Server } from "node:http";
 
-import type { DispatchOptions, GatewayRequestDispatcher } from "./dispatcher.js";
+import type {
+  DispatchOptions,
+  GatewayRequestDispatcher,
+} from "./dispatcher.js";
 
 export interface GatewayServerOptions extends DispatchOptions {
   readonly host?: string;
@@ -21,10 +24,15 @@ export function createGatewayServer(
     try {
       const body = await readJsonBody(request);
       const result = await dispatcher.dispatch(body, options);
-      response.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(result));
+      response
+        .writeHead(200, { "content-type": "application/json" })
+        .end(JSON.stringify(result));
     } catch (error) {
       const statusCode = error instanceof BadRequestError ? 400 : 500;
-      const message = error instanceof BadRequestError ? error.message : "Internal server error";
+      const message =
+        error instanceof BadRequestError
+          ? error.message
+          : "Internal server error";
       response
         .writeHead(statusCode, { "content-type": "application/json" })
         .end(JSON.stringify({ error: { message } }));
@@ -32,7 +40,10 @@ export function createGatewayServer(
   });
 }
 
-export function startGatewayServer(server: Server, options: GatewayServerOptions): Promise<Server> {
+export function startGatewayServer(
+  server: Server,
+  options: GatewayServerOptions,
+): Promise<Server> {
   return new Promise((resolve, reject) => {
     const onError = (error: Error) => {
       server.off("error", onError);

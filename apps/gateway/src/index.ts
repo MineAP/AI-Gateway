@@ -2,25 +2,26 @@ import { ProviderRegistry } from "@ai-gateway/provider";
 
 import {
   type CompatibilityPipeline,
+  type DispatchOptions,
   GatewayRequestDispatcher,
   type ProviderExecutor,
 } from "./dispatcher.js";
 import {
   createGatewayServer,
-  startGatewayServer,
   type GatewayServerOptions,
+  startGatewayServer,
 } from "./server.js";
 
 /** HTTP API Endpoint - Gateway entry point */
 export const gatewayVersion = "0.0.1";
 
-export { GatewayRequestDispatcher, createGatewayServer, startGatewayServer };
 export type {
   CompatibilityPipeline,
   DispatchOptions,
   GatewayServerOptions,
   ProviderExecutor,
 };
+export { createGatewayServer, GatewayRequestDispatcher, startGatewayServer };
 
 export function createGatewayApplication(
   pipeline: CompatibilityPipeline,

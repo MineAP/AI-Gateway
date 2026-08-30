@@ -1,15 +1,18 @@
+import type {
+  GatewayRequest,
+  GatewayResponse,
+  ProcessingContext,
+} from "@ai-gateway/protocol";
 import { describe, expect, it } from "vitest";
-
-import type { GatewayRequest, GatewayResponse, ProcessingContext } from "@ai-gateway/protocol";
-import type { CompatibilityModule } from "../src/module.js";
 import { CompatibilityPipeline, PipelineError } from "../src/index.js";
+import type { CompatibilityModule } from "../src/module.js";
 
 function makeRequest(data: Record<string, unknown>): GatewayRequest {
-  return { raw: data, metadata: {} };
+  return { messages: [], rawData: data };
 }
 
 function makeResponse(data: Record<string, unknown>): GatewayResponse {
-  return { raw: data, metadata: {} };
+  return { rawData: data };
 }
 
 describe("CompatibilityPipeline", () => {
@@ -100,13 +103,18 @@ describe("CompatibilityPipeline", () => {
         name: "reader",
         async processRequest(req, context) {
           const value = context.metadata.get("key");
-          return { ...req, metadata: { readValue: value } };
+          return {
+            ...req,
+            messages: [{ role: "user", content: String(value) }],
+          };
         },
       });
 
-      const result = await pipeline.processRequest(makeRequest({}), { metadata: new Map() });
+      const result = await pipeline.processRequest(makeRequest({}), {
+        metadata: new Map(),
+      });
 
-      expect(result.metadata).toEqual({ readValue: "value" });
+      expect(result.messages).toEqual([{ role: "user", content: "value" }]);
     });
 
     it("shares ProcessingContext between request and response phases", async () => {
@@ -122,14 +130,15 @@ describe("CompatibilityPipeline", () => {
         },
         async processResponse(res, ctx) {
           const phase = ctx.metadata.get("phase");
-          return { ...res, metadata: { phase } };
+          ctx.metadata.set("response-observed", phase);
+          return res;
         },
       });
 
       await pipeline.processRequest(makeRequest({}), context);
-      const responseResult = await pipeline.processResponse(makeResponse({}), context);
+      await pipeline.processResponse(makeResponse({}), context);
 
-      expect(responseResult.metadata).toEqual({ phase: "request-done" });
+      expect(context.metadata.get("response-observed")).toBe("request-done");
     });
   });
 
@@ -140,42 +149,61 @@ describe("CompatibilityPipeline", () => {
       pipeline.register({
         name: "step1",
         async processRequest(req) {
-          return { ...req, metadata: { step: 1 } };
+          return { ...req, messages: [{ role: "user", content: "step-1" }] };
         },
       });
       pipeline.register({
         name: "step2",
         async processRequest(req) {
-          return { ...req, metadata: { ...req.metadata, step: 2 } };
+          const sawStep1 = req.messages.some((m) => m.content === "step-1");
+          return {
+            ...req,
+            messages: [
+              ...req.messages,
+              {
+                role: "assistant",
+                content: sawStep1 ? "step-2" : "missing-step-1",
+              },
+            ],
+          };
         },
       });
 
-      const result = await pipeline.processRequest(makeRequest({}), { metadata: new Map() });
+      const result = await pipeline.processRequest(makeRequest({}), {
+        metadata: new Map(),
+      });
 
-      expect(result.metadata).toEqual({ step: 2 });
+      expect(result.messages.map((m) => m.content)).toEqual([
+        "step-1",
+        "step-2",
+      ]);
     });
 
     it("passes module output to the next module in response processing", async () => {
       const pipeline = new CompatibilityPipeline();
+      const context: ProcessingContext = { metadata: new Map() };
 
       // Response modules execute in reverse registration order (b -> a),
-      // so "a" runs after "b" and can observe its output.
+      // so "a" runs after "b" and can observe its output via the shared context.
       pipeline.register({
         name: "a",
-        async processResponse(res) {
-          return { ...res, metadata: { ...res.metadata, stepA: res.metadata.stepB === 1 ? 2 : -1 } };
+        async processResponse(res, ctx) {
+          const stepB = ctx.metadata.get("stepB");
+          ctx.metadata.set("stepA", stepB === 1 ? 2 : -1);
+          return res;
         },
       });
       pipeline.register({
         name: "b",
-        async processResponse(res) {
-          return { ...res, metadata: { ...res.metadata, stepB: 1 } };
+        async processResponse(res, ctx) {
+          ctx.metadata.set("stepB", 1);
+          return res;
         },
       });
 
-      const result = await pipeline.processResponse(makeResponse({}), { metadata: new Map() });
+      await pipeline.processResponse(makeResponse({}), context);
 
-      expect(result.metadata).toEqual({ stepB: 1, stepA: 2 });
+      expect(context.metadata.get("stepA")).toBe(2);
     });
   });
 

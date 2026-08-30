@@ -1,4 +1,8 @@
-import type { GatewayRequest, GatewayResponse, ProcessingContext } from "@ai-gateway/protocol";
+import type {
+  GatewayRequest,
+  GatewayResponse,
+  ProcessingContext,
+} from "@ai-gateway/protocol";
 
 /**
  * A Compatibility Module performs one specific compatibility transformation

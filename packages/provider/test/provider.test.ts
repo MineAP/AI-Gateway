@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest";
 
-import { ProviderRegistry, type ProviderAdapter } from "../src/index.js";
+import { type ProviderAdapter, ProviderRegistry } from "../src/index.js";
 
 const adapter: ProviderAdapter = {
   providerId: "test",
   async parseRequest(request) {
-    return { raw: request, metadata: {} };
+    return { messages: [], rawData: request as Record<string, unknown> };
   },
   async buildRequest(request) {
-    return request.raw;
+    return request.rawData;
   },
   async parseResponse(response) {
-    return { raw: response, metadata: {} };
+    return { rawData: response as Record<string, unknown> };
   },
   async buildResponse(response) {
-    return response.raw;
+    return response.rawData;
   },
 };
 

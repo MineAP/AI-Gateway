@@ -174,13 +174,13 @@ Each module operates only on the Internal Model.
 ## Request / Response
 
 ```typescript
-interface InternalRequest {
-  readonly messages: InternalMessage[];
-  readonly tools?: InternalToolDefinition[];
+interface GatewayRequest {
+  readonly messages: Message[];
+  readonly tools?: ToolDefinition[];
   readonly rawData: Record<string, unknown>;
 }
 
-interface InternalResponse {
+interface GatewayResponse {
   readonly rawData: Record<string, unknown>;
 }
 ```
@@ -198,10 +198,10 @@ interface InternalResponse {
 ## Message
 
 ```typescript
-interface InternalMessage {
+interface Message {
   readonly role: "system" | "user" | "assistant" | "tool";
   readonly content?: string;
-  readonly toolCalls?: InternalToolCall[];
+  readonly toolCalls?: ToolCall[];
   readonly toolCallId?: string;
 }
 ```
@@ -216,7 +216,7 @@ interface InternalMessage {
 The Internal Model separates tool definitions (which may be namespaced) from tool calls (which are always flat).
 
 ```typescript
-interface InternalToolCall {
+interface ToolCall {
   readonly id: string;
   readonly function: {
     readonly name: string;
@@ -224,26 +224,24 @@ interface InternalToolCall {
   };
 }
 
-interface InternalFunctionToolDefinition {
+interface FunctionToolDefinition {
   readonly type: "function";
   readonly name: string;
   readonly description?: string;
   readonly parameters?: object;
 }
 
-interface InternalNamespaceToolDefinition {
+interface NamespaceToolDefinition {
   readonly type: "namespace";
   readonly name: string;
-  readonly tools: InternalFunctionToolDefinition[];
+  readonly tools: FunctionToolDefinition[];
 }
 
-type InternalToolDefinition =
-  | InternalFunctionToolDefinition
-  | InternalNamespaceToolDefinition;
+type ToolDefinition = FunctionToolDefinition | NamespaceToolDefinition;
 ```
 
 - Tool calls always carry a flat `function.name`. When the original definition was namespaced, the name follows `<namespace>__<tool>` convention (e.g., `mcp__MCP_DOCKER__browser_click`).
-- Namespace grouping is expressed only in `InternalToolDefinition`; tool calls never carry namespace structure.
+- Namespace grouping is expressed only in `ToolDefinition`; tool calls never carry namespace structure.
 
 ### Structural Transformation in Compatibility Pipeline
 
@@ -258,6 +256,25 @@ This design ensures that:
 - Provider Adapters handle only protocol-specific parsing and serialization.
 - Structural transformation logic is encapsulated within the Compatibility Pipeline.
 - Response processing requires no structural restoration: provider returns tool calls with flat names (e.g., `mcp__MCP_DOCKER__browser_click`), which match Codex internal identifiers directly.
+
+---
+
+# Streaming Chunk
+
+Streaming responses are represented as a sequence of chunks. Each chunk is
+processed independently by the Compatibility Pipeline, while all chunks of one
+stream share a single Processing Context for the duration of the stream.
+
+```typescript
+interface StreamChunk {
+  readonly delta?: string;
+  readonly rawData: Record<string, unknown>;
+}
+```
+
+- `delta` carries incremental text content when the chunk produces any.
+- Provider-specific event payloads (event names, identifiers, non-text deltas) remain in `rawData`.
+- REQ-001 does not transform chunks: its response phase is pass-through.
 
 ---
 
@@ -296,11 +313,12 @@ The following types and fields are in scope for REQ-001:
 
 | Type | In Scope |
 |------|----------|
-| `InternalRequest` | ✅ Full |
-| `InternalResponse` | ✅ Full |
-| `InternalMessage` | ✅ Full |
-| `InternalToolCall` | ✅ Full (preserved and passed through in REQ-001) |
-| `InternalToolDefinition` | ✅ Full |
+| `GatewayRequest` | ✅ Full |
+| `GatewayResponse` | ✅ Full |
+| `Message` | ✅ Full |
+| `ToolCall` | ✅ Full (preserved and passed through in REQ-001) |
+| `ToolDefinition` | ✅ Full |
+| `StreamChunk` | ✅ Minimal representation (`delta`, `rawData`); pass-through in REQ-001 |
 | `ProcessingContext` | ✅ Lifecycle management only; no cross-phase state needed for REQ-001 |
 
 ### Out of Scope for REQ-001
@@ -320,6 +338,15 @@ Error responses do not pass through the Internal Model in REQ-001.
 
 When a Provider Adapter receives an error from a provider, the Dispatcher returns it to the client as-is.
 Error format normalization is deferred to future requirements.
+
+---
+
+# Resolved Design Decisions
+
+- **Final interface names**: Gateway-oriented names per `docs/development.md` (Architectural Naming): `GatewayRequest`, `GatewayResponse`, `Message`, `ToolCall`, `FunctionToolDefinition`, `NamespaceToolDefinition`, `StreamChunk`, `ProcessingContext`. Implemented in `@ai-gateway/protocol`.
+- **Immutability**: Internal Model types are immutable (`readonly` fields). The exception is `ProcessingContext.metadata`, which is a mutable `Map` shared across request/response phases.
+- **Streaming chunk representation**: `StreamChunk { delta?, rawData }`. Incremental text is exposed as `delta`; all other provider-specific event data stays in `rawData`.
+- **Error representation**: Errors do not pass through the Internal Model in REQ-001 (see Error Handling).
 
 ---
 
