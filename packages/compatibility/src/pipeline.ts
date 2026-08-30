@@ -1,9 +1,16 @@
-import type { GatewayRequest, GatewayResponse, ProcessingContext } from "@ai-gateway/protocol";
+import type {
+  GatewayRequest,
+  GatewayResponse,
+  ProcessingContext,
+} from "@ai-gateway/protocol";
 import type { CompatibilityModule } from "./module.js";
 
 /** Error thrown when a compatibility module fails during pipeline execution. */
 export class PipelineError extends Error {
-  constructor(readonly moduleName: string, message: string) {
+  constructor(
+    readonly moduleName: string,
+    message: string,
+  ) {
     super(message);
     this.name = "PipelineError";
   }

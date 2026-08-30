@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false
+  },
+  "include": [
+    "packages/protocol/src",
+    "packages/protocol/test",
+    "packages/provider/src",
+    "packages/provider/test",
+    "packages/compatibility/src",
+    "packages/compatibility/test",
+    "packages/config/src",
+    "packages/config/test",
+    "packages/shared/src",
+    "packages/shared/test",
+    "apps/gateway/src",
+    "apps/gateway/test"
+  ]
+}

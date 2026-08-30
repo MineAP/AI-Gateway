@@ -26,12 +26,17 @@ describe("development gateway", () => {
       throw new Error("Expected an HTTP address");
     }
 
-    const response = await fetch(`http://127.0.0.1:${address.port}/v1/chat/completions`, {
-      method: "POST",
-      body: JSON.stringify({ model: "development" }),
-    });
+    const response = await fetch(
+      `http://127.0.0.1:${address.port}/v1/chat/completions`,
+      {
+        method: "POST",
+        body: JSON.stringify({ model: "development" }),
+      },
+    );
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ echoed: { model: "development" } });
+    await expect(response.json()).resolves.toEqual({
+      echoed: { model: "development" },
+    });
   });
 });

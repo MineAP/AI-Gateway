@@ -237,7 +237,7 @@ Response processing corresponds to the Request that initiated the provider
 interaction.
 
 For streaming responses, future stateful Compatibility Modules may process each
-chunk independently as an `InternalChunk` while sharing a single Processing
+chunk independently as a `StreamChunk` while sharing a single Processing
 Context for the duration of the stream. REQ-001 does not maintain response
 processing state because its response phase is pass-through.
 
@@ -262,10 +262,10 @@ forwarding to the Provider Adapter.
 
 ### Transformation Logic
 
-For each namespace entry in `InternalRequest.tools[]`:
+For each namespace entry in `GatewayRequest.tools[]`:
 
 1. Extract the inner `tools[]` array from the namespace object.
-2. For each inner tool, create a standalone `InternalToolDefinition` with `type: "function"`.
+2. For each inner tool, create a standalone `FunctionToolDefinition` with `type: "function"`.
 3. Set the flattened tool name to `<namespace_name>__<tool_name>` (e.g., `mcp__MCP_DOCKER__browser_click`). This naming convention matches Codex CLI internal identifiers.
 4. Replace the original namespace entry with the flattened function definitions.
 

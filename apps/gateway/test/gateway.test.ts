@@ -1,26 +1,25 @@
+import type { ProviderAdapter } from "@ai-gateway/provider";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { ProviderAdapter } from "@ai-gateway/provider";
-
 import {
-  createGatewayApplication,
   type CompatibilityPipeline,
+  createGatewayApplication,
   type ProviderExecutor,
 } from "../src/index.js";
 
 const adapter: ProviderAdapter = {
   providerId: "test",
   async parseRequest(request) {
-    return { raw: request, metadata: {} };
+    return { messages: [], rawData: request as Record<string, unknown> };
   },
   async buildRequest(request) {
-    return request.raw;
+    return request.rawData;
   },
   async parseResponse(response) {
-    return { raw: response, metadata: {} };
+    return { rawData: response as Record<string, unknown> };
   },
   async buildResponse(response) {
-    return response.raw;
+    return response.rawData;
   },
 };
 
@@ -68,10 +67,13 @@ describe("GatewayRequestDispatcher", () => {
     application.registry.register(adapter);
 
     await expect(
-      application.dispatcher.dispatch({ model: "test" }, {
-        inboundProviderId: "test",
-        outboundProviderId: "test",
-      }),
+      application.dispatcher.dispatch(
+        { model: "test" },
+        {
+          inboundProviderId: "test",
+          outboundProviderId: "test",
+        },
+      ),
     ).resolves.toEqual({ echoed: { model: "test" } });
   });
 
@@ -91,13 +93,18 @@ describe("GatewayRequestDispatcher", () => {
       throw new Error("Expected an HTTP address");
     }
 
-    const response = await fetch(`http://127.0.0.1:${address.port}/v1/chat/completions?trace=1`, {
-      method: "POST",
-      body: JSON.stringify({ model: "test" }),
-    });
+    const response = await fetch(
+      `http://127.0.0.1:${address.port}/v1/chat/completions?trace=1`,
+      {
+        method: "POST",
+        body: JSON.stringify({ model: "test" }),
+      },
+    );
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ echoed: { model: "test" } });
+    await expect(response.json()).resolves.toEqual({
+      echoed: { model: "test" },
+    });
   });
 
   it("returns a client error for malformed JSON", async () => {
@@ -116,10 +123,13 @@ describe("GatewayRequestDispatcher", () => {
       throw new Error("Expected an HTTP address");
     }
 
-    const response = await fetch(`http://127.0.0.1:${address.port}/v1/chat/completions`, {
-      method: "POST",
-      body: "{",
-    });
+    const response = await fetch(
+      `http://127.0.0.1:${address.port}/v1/chat/completions`,
+      {
+        method: "POST",
+        body: "{",
+      },
+    );
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
@@ -143,10 +153,13 @@ describe("GatewayRequestDispatcher", () => {
       throw new Error("Expected an HTTP address");
     }
 
-    const response = await fetch(`http://127.0.0.1:${address.port}/v1/chat/completions`, {
-      method: "POST",
-      body: JSON.stringify({ model: "test" }),
-    });
+    const response = await fetch(
+      `http://127.0.0.1:${address.port}/v1/chat/completions`,
+      {
+        method: "POST",
+        body: JSON.stringify({ model: "test" }),
+      },
+    );
 
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
