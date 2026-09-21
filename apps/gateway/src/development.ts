@@ -1,10 +1,10 @@
+import {
+  CompatibilityPipeline,
+  openaiResponsesProfile,
+} from "@ai-gateway/compatibility";
 import type { ProviderAdapter } from "@ai-gateway/provider";
 
-import {
-  type CompatibilityPipeline,
-  createGatewayApplication,
-  type ProviderExecutor,
-} from "./index.js";
+import { createGatewayApplication, type ProviderExecutor } from "./index.js";
 
 export interface DevelopmentGatewayOptions {
   readonly host?: string;
@@ -29,14 +29,10 @@ const developmentAdapter: ProviderAdapter = {
   },
 };
 
-const developmentPipeline: CompatibilityPipeline = {
-  async processRequest(request) {
-    return request;
-  },
-  async processResponse(response) {
-    return response;
-  },
-};
+const developmentPipeline = new CompatibilityPipeline();
+for (const module of openaiResponsesProfile.modules) {
+  developmentPipeline.register(module);
+}
 
 const developmentExecutor: ProviderExecutor = {
   async execute(request, _adapter, _context) {
