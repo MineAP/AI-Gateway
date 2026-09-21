@@ -322,16 +322,16 @@ Gateway Internal Model
 Compatibility Profile
         │
         ▼
-function → namespace
+(no structural transformation)
         │
         ▼
-Gateway Internal Model (transformed)
+Gateway Internal Model
         │
         ▼
 Client Response (via inbound adapter)
 ```
 
-The request and response transformations are symmetrical.
+Response processing is pass-through for REQ-001: provider responses carry flat tool call names that match client-side identifiers directly, so no structural restoration is required.
 
 A compatibility profile defines model-specific transformations applied during request and response processing.
 

@@ -1,7 +1,8 @@
-import type {
-  GatewayRequest,
-  GatewayResponse,
-  ProcessingContext,
+import {
+  ClientRequestError,
+  type GatewayRequest,
+  type GatewayResponse,
+  type ProcessingContext,
 } from "@ai-gateway/protocol";
 import { describe, expect, it } from "vitest";
 import { CompatibilityPipeline, PipelineError } from "../src/index.js";
@@ -291,6 +292,50 @@ describe("CompatibilityPipeline", () => {
         expect(error).toBeInstanceOf(PipelineError);
         const pe = error as PipelineError;
         expect(pe.moduleName).toBe("broken-module");
+      }
+    });
+
+    it("preserves the original error as cause during request processing", async () => {
+      const pipeline = new CompatibilityPipeline();
+      const clientError = new ClientRequestError("Duplicate tool name: ns__x");
+
+      pipeline.register({
+        name: "failing-module",
+        async processRequest() {
+          throw clientError;
+        },
+      });
+
+      try {
+        await pipeline.processRequest(makeRequest({}), { metadata: new Map() });
+        expect.unreachable();
+      } catch (error) {
+        expect(error).toBeInstanceOf(PipelineError);
+        const pe = error as PipelineError;
+        expect(pe.cause).toBe(clientError);
+      }
+    });
+
+    it("preserves the original error as cause during response processing", async () => {
+      const pipeline = new CompatibilityPipeline();
+      const clientError = new ClientRequestError("Duplicate tool name: ns__x");
+
+      pipeline.register({
+        name: "failing-module",
+        async processResponse() {
+          throw clientError;
+        },
+      });
+
+      try {
+        await pipeline.processResponse(makeResponse({}), {
+          metadata: new Map(),
+        });
+        expect.unreachable();
+      } catch (error) {
+        expect(error).toBeInstanceOf(PipelineError);
+        const pe = error as PipelineError;
+        expect(pe.cause).toBe(clientError);
       }
     });
 

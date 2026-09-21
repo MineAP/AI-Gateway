@@ -1,5 +1,8 @@
 import { createServer, type Server } from "node:http";
 
+import { PipelineError } from "@ai-gateway/compatibility";
+import { ClientRequestError } from "@ai-gateway/protocol";
+
 import type {
   DispatchOptions,
   GatewayRequestDispatcher,
@@ -28,14 +31,16 @@ export function createGatewayServer(
         .writeHead(200, { "content-type": "application/json" })
         .end(JSON.stringify(result));
     } catch (error) {
-      const statusCode = error instanceof BadRequestError ? 400 : 500;
-      const message =
-        error instanceof BadRequestError
-          ? error.message
-          : "Internal server error";
+      const clientError = findClientRequestError(error);
       response
-        .writeHead(statusCode, { "content-type": "application/json" })
-        .end(JSON.stringify({ error: { message } }));
+        .writeHead(clientError ? 400 : 500, {
+          "content-type": "application/json",
+        })
+        .end(
+          JSON.stringify({
+            error: { message: clientError?.message ?? "Internal server error" },
+          }),
+        );
     }
   });
 }
@@ -69,11 +74,22 @@ function readJsonBody(request: NodeJS.ReadableStream): Promise<unknown> {
       try {
         resolve(JSON.parse(body));
       } catch {
-        reject(new BadRequestError("Request body must be valid JSON"));
+        reject(new ClientRequestError("Request body must be valid JSON"));
       }
     });
     request.on("error", reject);
   });
 }
 
-class BadRequestError extends Error {}
+function findClientRequestError(
+  error: unknown,
+): ClientRequestError | undefined {
+  if (error instanceof ClientRequestError) return error;
+  if (
+    error instanceof PipelineError &&
+    error.cause instanceof ClientRequestError
+  ) {
+    return error.cause;
+  }
+  return undefined;
+}

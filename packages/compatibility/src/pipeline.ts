@@ -5,13 +5,14 @@ import type {
 } from "@ai-gateway/protocol";
 import type { CompatibilityModule } from "./module.js";
 
-/** Error thrown when a compatibility module fails during pipeline execution. */
+/** Error thrown when a compatibility module fails during pipeline execution. The original error is preserved as `cause`. */
 export class PipelineError extends Error {
   constructor(
     readonly moduleName: string,
     message: string,
+    options?: ErrorOptions,
   ) {
-    super(message);
+    super(message, options);
     this.name = "PipelineError";
   }
 }
@@ -45,6 +46,7 @@ export class CompatibilityPipeline {
         throw new PipelineError(
           module.name,
           `Module "${module.name}" failed during request processing: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
         );
       }
     }
@@ -65,6 +67,7 @@ export class CompatibilityPipeline {
         throw new PipelineError(
           module.name,
           `Module "${module.name}" failed during response processing: ${error instanceof Error ? error.message : String(error)}`,
+          { cause: error },
         );
       }
     }

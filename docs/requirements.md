@@ -74,7 +74,7 @@ AI Gateway should bridge these compatibility differences so that existing MCP to
 
 - Codex can invoke Docker MCP Toolkit through LM Studio using AI Gateway.
 - Namespace-based tool calls are translated into function-based tool calls.
-- Function-based tool responses are translated back into namespace-based tool responses.
+- Function-based tool calls in provider responses are passed through unchanged to the client.
 - Compatibility transformations are isolated from AI Provider implementations.
 - Additional compatibility profiles can be introduced without changing the overall architecture.
 

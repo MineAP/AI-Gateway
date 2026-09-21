@@ -1,3 +1,8 @@
+import {
+  functionCallingModule,
+  CompatibilityPipeline as RealCompatibilityPipeline,
+} from "@ai-gateway/compatibility";
+import type { ToolDefinition } from "@ai-gateway/protocol";
 import type { ProviderAdapter } from "@ai-gateway/provider";
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -11,6 +16,23 @@ const adapter: ProviderAdapter = {
   providerId: "test",
   async parseRequest(request) {
     return { messages: [], rawData: request as Record<string, unknown> };
+  },
+  async buildRequest(request) {
+    return request.rawData;
+  },
+  async parseResponse(response) {
+    return { rawData: response as Record<string, unknown> };
+  },
+  async buildResponse(response) {
+    return response.rawData;
+  },
+};
+
+const toolPreservingAdapter: ProviderAdapter = {
+  providerId: "test",
+  async parseRequest(request) {
+    const raw = request as Record<string, unknown>;
+    return { messages: [], tools: raw.tools as ToolDefinition[], rawData: raw };
   },
   async buildRequest(request) {
     return request.rawData;
@@ -164,6 +186,51 @@ describe("GatewayRequestDispatcher", () => {
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
       error: { message: "Internal server error" },
+    });
+  });
+
+  it("returns a client error for duplicate tool names", async () => {
+    const realPipeline = new RealCompatibilityPipeline();
+    realPipeline.register(functionCallingModule);
+
+    const application = createGatewayApplication(realPipeline, executor, {
+      inboundProviderId: "test",
+      outboundProviderId: "test",
+      host: "127.0.0.1",
+      port: 0,
+    });
+    application.registry.register(toolPreservingAdapter);
+    await application.start();
+    servers.push(application.server);
+
+    const address = application.server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an HTTP address");
+    }
+
+    const response = await fetch(
+      `http://127.0.0.1:${address.port}/v1/chat/completions`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          model: "test",
+          tools: [
+            {
+              type: "namespace",
+              name: "ns",
+              tools: [
+                { type: "function", name: "x" },
+                { type: "function", name: "x" },
+              ],
+            },
+          ],
+        }),
+      },
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      error: { message: "Duplicate tool name: ns__x" },
     });
   });
 });
