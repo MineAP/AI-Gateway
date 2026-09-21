@@ -1,4 +1,4 @@
-import type { ToolDefinition } from "@ai-gateway/protocol";
+import { ClientRequestError, type ToolDefinition } from "@ai-gateway/protocol";
 
 import type { CompatibilityModule } from "./module.js";
 
@@ -40,7 +40,7 @@ function assertNoDuplicateToolNames(tools: readonly ToolDefinition[]): void {
   const seen = new Set<string>();
   for (const tool of tools) {
     if (seen.has(tool.name)) {
-      throw new Error(`Duplicate tool name: ${tool.name}`);
+      throw new ClientRequestError(`Duplicate tool name: ${tool.name}`);
     }
     seen.add(tool.name);
   }

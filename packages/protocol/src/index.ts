@@ -74,3 +74,14 @@ export interface ProcessingContext {
   /** Mutable key/value store shared across request and response phases. */
   readonly metadata: Map<string, unknown>;
 }
+
+/**
+ * Error indicating that a client request is invalid and cannot be processed.
+ * The HTTP API Endpoint maps this error to 400 Bad Request.
+ */
+export class ClientRequestError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ClientRequestError";
+  }
+}

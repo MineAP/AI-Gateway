@@ -378,6 +378,23 @@ errors.
 Provider communication and transport errors remain the responsibility of
 Provider Adapters.
 
+## Client Request Errors
+
+Request validation failures are reported as `ClientRequestError`, a shared error
+type defined in the protocol package.
+
+The Function Calling Module throws `ClientRequestError` when flattening produces
+duplicate tool names.
+
+The Compatibility Pipeline wraps module errors in `PipelineError` and preserves
+the original error as its cause, so client request errors remain identifiable
+after pipeline processing.
+
+The HTTP API Endpoint maps a `ClientRequestError`, whether thrown directly or
+preserved as the cause of a `PipelineError`, to an HTTP 400 response carrying
+the client-facing message. All other failures are mapped to HTTP 500 with a
+generic message.
+
 ---
 
 # REQ-001 Scope

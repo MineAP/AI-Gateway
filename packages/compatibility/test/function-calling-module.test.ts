@@ -1,4 +1,8 @@
-import type { GatewayRequest, ToolDefinition } from "@ai-gateway/protocol";
+import {
+  ClientRequestError,
+  type GatewayRequest,
+  type ToolDefinition,
+} from "@ai-gateway/protocol";
 
 import { describe, expect, it } from "vitest";
 
@@ -131,6 +135,23 @@ describe("functionCallingModule", () => {
 
     await expect(processRequest(request)).rejects.toThrow(
       "Duplicate tool name: ns__x",
+    );
+  });
+
+  it("throws ClientRequestError when flattening produces duplicate tool names", async () => {
+    const request = makeRequest([
+      {
+        type: "namespace",
+        name: "ns",
+        tools: [
+          { type: "function", name: "x" },
+          { type: "function", name: "x" },
+        ],
+      },
+    ]);
+
+    await expect(processRequest(request)).rejects.toBeInstanceOf(
+      ClientRequestError,
     );
   });
 
